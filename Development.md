@@ -58,38 +58,76 @@ The Spotify Wrapped Booster app is designed to optimize your Spotify Wrapped by 
 
 ---
 
-## Development Phases
+## **Development Phases**
 
-### Phase 1: Backend Development
-
+### **Phase 1: Backend Development**
+- **Objective**: Set up a robust backend to handle Spotify authentication and token management.
 1. Set up Spotify authentication using OAuth2.
-2. Create APIs to fetch user data and refresh tokens.
-3. Test token handling and storage with a sample JSON/MongoDB setup.
+2. Create APIs to:
+   - Fetch user data.
+   - Refresh tokens.
+3. Test token handling and storage with a sample JSON or MongoDB setup.
 
-### Phase 2: Frontend/Desktop App
+---
 
-1. Build a basic GUI with user preferences and playback status.
-2. Add system tray integration for Windows.
-3. Connect to the backend for user authentication and settings.
+### **Phase 2: Frontend/Desktop App**
 
-### Phase 3: Playback Scheduler
+#### **Phase 2a: Basic Functionality**
+- **Objective**: Establish basic GUI functionality and WebSocket integration.
+1. Build a basic GUI to display user preferences and playback status.
+2. Integrate WebSocket to receive real-time updates from the backend.
+3. Add desktop notifications for events (e.g., token refresh, updates).
 
+#### **Phase 2b: Enhanced GUI and System Tray**
+- **Objective**: Enhance the desktop app for better usability.
+1. Add system tray integration for Windows:
+   - Run app in the background.
+   - Add tray icon for quick controls (e.g., pause/resume playback).
+2. Extend GUI to show:
+   - Playback status.
+   - Token expiry time.
+3. Include options for user preferences:
+   - Set top songs for boosting.
+   - Enable/disable specific features.
+
+---
+
+### **Phase 3: Playback Scheduler**
+- **Objective**: Implement a playback mechanism to meet Spotify Wrapped goals.
 1. Implement a background playback mechanism using threading or scheduling.
-2. Ensure playback runs without interrupting user activities.
+2. Allow users to set schedules for automatic playback.
+3. Ensure playback runs seamlessly without interrupting user activities.
 
-### Phase 4: Machine Learning Integration
+---
 
-1. Collect user activity data (e.g., login/logout times).
-2. Train a time-series model to predict activity patterns.
-3. Integrate predictions into the playback scheduler.
+### **Phase 4: Machine Learning Integration**
 
-### Phase 5: Testing and Deployment
+#### **Phase 4a: Data Collection**
+1. Collect user activity data (e.g., login/logout times, playback history).
+2. Store data securely in a local database (e.g., SQLite) or MongoDB.
 
-1. Test the complete workflow:
-   - User authentication.
-   - Playback scheduling.
-   - Machine learning predictions.
-2. Package the desktop app for distribution using PyInstaller or equivalent tools.
+#### **Phase 4b: Model Development**
+1. Use collected data to train a time-series model (e.g., using `scikit-learn` or `tensorflow`).
+2. Predict activity patterns (e.g., when the user is likely to interact with Spotify).
+
+#### **Phase 4c: Integration**
+1. Integrate predictions into the playback scheduler.
+2. Add a "Learning Mode" option in the GUI for users to enable/disable predictions.
+
+---
+
+### **Phase 5: Testing and Deployment**
+
+1. **Testing**:
+   - End-to-end workflow:
+     - User authentication.
+     - Playback scheduling.
+     - Machine learning predictions.
+   - Cross-platform testing (Windows, macOS, Linux if applicable).
+
+2. **Deployment**:
+   - Package the desktop app using tools like PyInstaller or Electron.
+   - Create an installer for easy distribution.
 
 ---
 

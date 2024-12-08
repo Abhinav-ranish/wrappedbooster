@@ -3,3 +3,8 @@ uvicorn
 requests
 python-dotenv
 spotipy
+PyQt5
+websockets
+websockets-client
+asyncio
+pyler

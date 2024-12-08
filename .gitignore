@@ -3,7 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# only for this app
 config.json
+.user
 
 # C extensions
 *.so
