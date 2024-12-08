@@ -32,6 +32,12 @@ For a detailed step-by-step installation guide, see [Installation Guide](Install
 ### Prediction
 ![Prediction Screenshot](assets/predictions.png)
 
+### List of Songs
+![List of Songs](assets/songs.png)
+
+### Scheduler 
+![Scheduler](assets/scheduler.png)
+
 ---
 
 ## Usage
