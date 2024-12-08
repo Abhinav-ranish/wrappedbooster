@@ -1,6 +1,6 @@
 # Spotify Wrapped Booster
 
-## Overview
+![Spotify Wrapped Booster Logo](assets/logo.png)
 
 Spotify Wrapped Booster is a tool designed to help users optimize their Spotify Wrapped playlist. The app ensures that the songs you want to feature are played continuously during inactive periods, helping you meet the necessary hours and song requirements.
 
@@ -19,36 +19,20 @@ Spotify Wrapped Booster is a tool designed to help users optimize their Spotify 
 
 ## Installation
 
-### Prerequisites
+For a detailed step-by-step installation guide, see [Installation Guide](INSTALLATION.md).
 
-- Python 3.8 or higher.
-- Spotify Developer Account for API credentials.
-- (Optional) MongoDB for database storage.
+---
 
-### Steps
+## Screenshots
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-repo/spotify-wrapped-booster.git
-   cd spotify-wrapped-booster
-   ```
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Set up Spotify API credentials:
+### Playback Status
+![Playback Status Screenshot](assets/menu.png)
 
-   - Create a Spotify app at [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
-   - Add your client ID, secret, and redirect URI in `config.json`.
+### Machine Learning
+![Machine Learning Screenshot](assets/machinelearning.png)
 
-4. Run the backend server:
-   ```bash
-   python backend/server.py
-   ```
-5. Start the desktop app:
-   ```bash
-   python app/main.py
-   ```
+### Prediction
+![Prediction Screenshot](assets/predictions.png)
 
 ---
 
@@ -95,8 +79,3 @@ Feel free to fork the repository and submit pull requests. Contributions are wel
 ## License
 
 This project is licensed under the MIT License. See `LICENSE` for details.
-
-```
-
-Let me know if you want help implementing any of these sections or adding more details!
-```
