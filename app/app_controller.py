@@ -5,6 +5,7 @@ from ui import MainWindow
 from api_client import get_login_url, refresh_tokens
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer
 from datetime import datetime, timedelta
+from api_client import start_playback, pause_playback, stop_playback
 import webbrowser
 import websocket
 import time
@@ -13,6 +14,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os
 from plyer import notification
+import json
 
 # Load environment variables
 dotenv_path = Path(__file__).parent.parent / ".user"
@@ -76,6 +78,13 @@ class AppController:
         self.tray_icon = QSystemTrayIcon(QIcon("icon.png"), self.app)  # Use your app's icon here
         self.tray_icon.setToolTip("Spotify Booster")
 
+        # Preferences
+        self.preferences_file = "user_preferences.json"
+        self.load_preferences()
+
+        self.window.add_song_button.clicked.connect(self.add_song)
+        self.window.save_preferences_button.clicked.connect(self.save_preferences)
+
         # Tray Menu
         self.tray_menu = QMenu()
         self.show_action = self.tray_menu.addAction("Show App")
@@ -94,6 +103,11 @@ class AppController:
         self.token_expiry_timer.start(1000)  # Update every second
 
         self.refresh_threshold = timedelta(minutes=5)
+
+        # Connect playback controls
+        self.window.play_button.clicked.connect(self.play_song)
+        self.window.pause_button.clicked.connect(self.pause_song)
+        self.window.stop_button.clicked.connect(self.stop_playback)
 
     def login_to_spotify(self):
         self.window.token_label.setText("Opening browser for login...")
@@ -131,7 +145,8 @@ class AppController:
             notification.notify(
                 title="Spotify Booster",
                 message="Tokens refreshed successfully!",
-                app_name="Spotify Booster"
+                app_name="Spotify Booster",
+                timeout=3
             )
 
         except Exception as e:
@@ -146,12 +161,7 @@ class AppController:
     def update_access_token(self, token):
         """Update the GUI with the new access token."""
         self.window.token_label.setText("Token Status: Logged In")
-        # Notify the user
-        notification.notify(
-            title="Spotify Booster",
-            message="Access token updated in the GUI!",
-            app_name="Spotify Booster"
-        )
+
     
     def update_token_expiry(self):
         """Update the token expiry label dynamically and refresh tokens if needed."""
@@ -161,11 +171,10 @@ class AppController:
                 token_expiry_time = datetime.now() + timedelta(seconds=int(expires_in))
                 time_remaining = token_expiry_time - datetime.now()
 
-                # Update GUI
                 # if time_remaining.total_seconds() > 0:
-                #     self.window.token_label.setText(f"Token Expires In: {str(time_remaining).split('.')[0]}")
+                #     print(f"Token Expires In: {str(time_remaining).split('.')[0]}")
                 # else:
-                #     self.window.token_label.setText("Token Expired")
+                #     print("Token Expired")
                 
                 # Auto-refresh token if within the threshold
                 if time_remaining <= self.refresh_threshold:
@@ -197,6 +206,92 @@ class AppController:
                 message=f"Error auto-refreshing tokens: {str(e)}",
                 app_name="Spotify Booster"
             )
+
+    def load_preferences(self):
+        """Load user preferences from a JSON file."""
+        try:
+            with open(self.preferences_file, "r") as f:
+                preferences = json.load(f)
+                self.window.song_list.addItems(preferences.get("songs", []))
+        except FileNotFoundError:
+            print("Preferences file not found. Creating a new one.")
+        except Exception as e:
+            print(f"Error loading preferences: {e}")
+
+    def add_song(self):
+        """Add a song to the preferences list."""
+        song = self.window.song_input.text().strip()
+        if song:
+            self.window.song_list.addItem(song)
+            self.window.song_input.clear()
+            notification.notify(
+                title="Spotify Booster",
+                message=f"Added song: {song}",
+                app_name="Spotify Booster"
+            )
+
+    def save_preferences(self):
+        """Save user preferences to a JSON file."""
+        try:
+            songs = [self.window.song_list.item(i).text() for i in range(self.window.song_list.count())]
+            preferences = {"songs": songs}
+
+            with open(self.preferences_file, "w") as f:
+                json.dump(preferences, f, indent=4)
+
+            notification.notify(
+                title="Spotify Booster",
+                message="Preferences saved successfully!",
+                app_name="Spotify Booster"
+            )
+        except Exception as e:
+            print(f"Error saving preferences: {e}")
+            notification.notify(
+                title="Spotify Booster",
+                message=f"Error saving preferences: {str(e)}",
+                app_name="Spotify Booster"
+            )
+
+    
+    def play_song(self):
+        """Start playback on Spotify."""
+        try:
+            # Example URI for testing; replace with user-selected song if needed
+            example_song_uri = "spotify:track:2plbrEY59IikOBgBGLjaoe"
+            # https://open.spotify.com/track/2plbrEY59IikOBgBGLjaoe?si=73e7f6a50f7c43da spotify:track:2plbrEY59IikOBgBGLjaoe  spotify.com/track/ 2plbrEY59IikOBgBGLjaoe  ?si=73e7f6a50f7c43da
+            start_playback(example_song_uri)
+            self.window.token_label.setText("Playing song...")
+            notification.notify(
+                title="Spotify Booster",
+                message="Playback started successfully!",
+                app_name="Spotify Booster",
+                timeout=2
+            )
+        except Exception as e:
+            self.window.token_label.setText(f"Error playing song: {str(e)}")
+            notification.notify(
+                title="Spotify Booster",
+                message=f"Error playing song: {str(e)}",
+                app_name="Spotify Booster"
+            )
+
+    def pause_song(self):
+        """Pause playback on Spotify."""
+        try:
+            pause_playback()
+            self.window.token_label.setText("Playback paused.")
+        except Exception as e:
+            print(f"Error pausing playback: {str(e)}")
+
+
+    def stop_playback(self):
+        """Stop playback on Spotify."""
+        try:
+            stop_playback()
+            self.window.token_label.setText("Playback stopped.")
+        except Exception as e:
+            print(f"Error stopping playback: {str(e)}")
+
 
     def run(self):
         self.window.show()
