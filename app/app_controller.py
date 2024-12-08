@@ -5,7 +5,7 @@ from ui import MainWindow
 from api_client import get_login_url, refresh_tokens
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer
 from datetime import datetime, timedelta
-from api_client import start_playback, pause_playback, stop_playback
+from api_client import start_playback, pause_playback, validate_access_token
 import webbrowser
 import websocket
 import time
@@ -65,6 +65,9 @@ class AppController:
         self.app = QApplication(sys.argv)
         self.window = MainWindow()
 
+        # Check and refresh tokens at startup
+        self.check_and_refresh_tokens()
+
         # Connect buttons
         self.window.login_button.clicked.connect(self.login_to_spotify)
         self.window.refresh_button.clicked.connect(self.refresh_tokens)
@@ -109,11 +112,36 @@ class AppController:
         self.window.pause_button.clicked.connect(self.pause_song)
         self.window.stop_button.clicked.connect(self.stop_playback)
 
+        # Scheduler
+        self.schedule_file = "playback_schedule.json"
+        self.load_schedule()
+        self.window.save_schedule_button.clicked.connect(self.save_schedule)
+
+        # Start scheduler thread
+        self.scheduler_thread = Thread(target=self.run_scheduler, daemon=True)
+        self.scheduler_thread.start()
+        self.is_playing = False  # Tracks if playback is running
+
     def login_to_spotify(self):
         self.window.token_label.setText("Opening browser for login...")
         self.login_thread = LoginThread()
         self.login_thread.login_complete.connect(self.update_login_status)
         self.login_thread.start()
+    
+    def check_and_refresh_tokens(self):
+        """Check and refresh tokens at startup."""
+        try:
+            load_dotenv(dotenv_path)  # Reload the .user file
+            access_token = os.getenv("ACCESS_TOKEN")
+            if not access_token:
+                print("No valid login found. Please log in.")
+                return
+
+            # Attempt to refresh tokens
+            refresh_tokens()
+            print("Tokens refreshed successfully.")
+        except Exception as e:
+            print(f"Error refreshing tokens: {e}")
 
     def update_login_status(self, message):
         self.window.token_label.setText(message)
@@ -283,15 +311,112 @@ class AppController:
         except Exception as e:
             print(f"Error pausing playback: {str(e)}")
 
+    def load_schedule(self):
+        """Load the playback schedule from a JSON file."""
+        try:
+            with open(self.schedule_file, "r") as f:
+                schedule = json.load(f)
+                self.start_time = datetime.fromisoformat(schedule.get("start_time"))
+                self.end_time = datetime.fromisoformat(schedule.get("end_time"))
+        except (FileNotFoundError, ValueError):
+            print("No valid schedule found.")
+            self.start_time = None
+            self.end_time = None
+
+    def save_schedule(self):
+        """Save the playback schedule to a JSON file."""
+        try:
+            start_time = self.window.start_time_picker.dateTime().toPyDateTime()
+            end_time = self.window.end_time_picker.dateTime().toPyDateTime()
+
+            if end_time <= start_time:
+                self.window.scheduler_label.setText("End time must be after start time.")
+                return
+
+            schedule = {
+                "start_time": start_time.isoformat(),
+                "end_time": end_time.isoformat(),
+            }
+
+            with open(self.schedule_file, "w") as f:
+                json.dump(schedule, f, indent=4)
+
+            self.start_time = start_time
+            self.end_time = end_time
+            self.window.scheduler_label.setText("Schedule saved successfully!")
+
+            notification.notify(
+                title="Spotify Booster",
+                message="Playback schedule saved!",
+                app_name="Spotify Booster",
+            )
+        except Exception as e:
+            print(f"Error saving schedule: {e}")
+            self.window.scheduler_label.setText("Error saving schedule.")
+
+    def run_scheduler(self):
+        """Continuously check if it's time to start or stop playback."""
+        while True:
+            now = datetime.now()
+            if self.start_time and self.end_time:
+                if self.start_time <= now <= self.end_time:
+                    self.start_playback_if_not_running()
+                elif now > self.end_time:
+                    self.stop_playback()
+            time.sleep(10)  # Check every 10 seconds
+
+    def start_playback_if_not_running(self):
+        """Start playback if it's not already running."""
+        try:
+            if self.is_playing:
+                print("Playback is already running. Skipping API call.")
+                return
+
+            if not validate_access_token():
+                print("Access token invalid or expired. Login required.")
+                return
+
+            start_playback()  # Call the Spotify API
+            self.is_playing = True  # Set playback state
+            self.schedule_recheck()  # Schedule a recheck for later
+
+            notification.notify(
+                title="Spotify Booster",
+                message="Scheduled playback started!",
+                app_name="Spotify Booster",
+            )
+        except Exception as e:
+            print(f"Error starting playback: {e}")
+
+    def schedule_recheck(self):
+        """Schedule a recheck to validate playback after a certain period."""
+        Thread(target=self.recheck_playback_status, daemon=True).start()
+
+    def recheck_playback_status(self):
+        """Recheck playback status after 30 minutes."""
+        time.sleep(1800)  # Wait 30 minutes
+        print("Rechecking playback status...")
+        try:
+            if validate_access_token():
+                self.is_playing = False  # Reset state to trigger revalidation
+            else:
+                print("Access token expired during playback. Login required.")
+        except Exception as e:
+            print(f"Error rechecking playback: {e}")
 
     def stop_playback(self):
-        """Stop playback on Spotify."""
+        """Stop playback if the schedule ends."""
         try:
-            stop_playback()
-            self.window.token_label.setText("Playback stopped.")
+            pause_playback()
+            self.start_time = None
+            self.end_time = None  # Clear the schedule after stopping playback
+            notification.notify(
+                title="Spotify Booster",
+                message="Scheduled playback stopped!",
+                app_name="Spotify Booster",
+            )
         except Exception as e:
-            print(f"Error stopping playback: {str(e)}")
-
+            print(f"Error stopping playback: {e}")
 
     def run(self):
         self.window.show()
