@@ -48,7 +48,8 @@ pip install -r requirements.txt
 ### Step 4: Run the Backend Server
 
 ```bash
-python backend/server.py
+cd backend
+uvicorn server:app --reload
 ```
 
 Ensure the server is running to handle Spotify authentication and API requests.
@@ -56,7 +57,7 @@ Ensure the server is running to handle Spotify authentication and API requests.
 ### Step 5: Start the Desktop App
 
 ```bash
-python app/main.py
+python app/app_controller.py
 ```
 
 The GUI application will launch, allowing you to log in and configure playback.
