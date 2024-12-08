@@ -1,7 +1,5 @@
 # Spotify Wrapped Booster
 
-![Spotify Wrapped Booster Logo](assets/logo.png)
-
 Spotify Wrapped Booster is a tool designed to help users optimize their Spotify Wrapped playlist. The app ensures that the songs you want to feature are played continuously during inactive periods, helping you meet the necessary hours and song requirements.
 
 ---
