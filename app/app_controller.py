@@ -1,8 +1,10 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMessageBox
 from PyQt5.QtGui import QIcon
 from ui import MainWindow
+import pandas as pd
 from api_client import get_login_url, refresh_tokens
+from machinelearning.model_training import train_and_evaluate_model, load_and_prepare_data, save_model
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer
 from datetime import datetime, timedelta
 from api_client import start_playback, pause_playback, validate_access_token
@@ -11,6 +13,7 @@ import websocket
 import time
 from threading import Thread
 from dotenv import load_dotenv
+import joblib
 from pathlib import Path
 import os
 from plyer import notification
@@ -37,7 +40,8 @@ class WebSocketClient(QThread):
                 notification.notify(
                     title="Spotify Booster",
                     message="Access token updated successfully!",
-                    app_name="Spotify Booster"
+                    app_name="Spotify Booster",
+                    app_icon="icon.ico",
                 )
 
         while True:
@@ -122,12 +126,17 @@ class AppController:
         self.scheduler_thread.start()
         self.is_playing = False  # Tracks if playback is running
 
-    def login_to_spotify(self):
-        self.window.token_label.setText("Opening browser for login...")
-        self.login_thread = LoginThread()
-        self.login_thread.login_complete.connect(self.update_login_status)
-        self.login_thread.start()
-    
+         # Connect Machine Learning buttons
+        self.window.start_training_button.clicked.connect(self.start_training)
+        self.window.create_model_button.clicked.connect(self.create_model)
+
+        # Connect Prediction button
+        self.window.start_prediction_button.clicked.connect(self.start_prediction)
+
+        # Load trained model (initially None)
+        self.model = None
+        self.label_encoder = None
+        
     def check_and_refresh_tokens(self):
         """Check and refresh tokens at startup."""
         try:
@@ -142,6 +151,14 @@ class AppController:
             print("Tokens refreshed successfully.")
         except Exception as e:
             print(f"Error refreshing tokens: {e}")
+
+
+    def login_to_spotify(self):
+        self.window.token_label.setText("Opening browser for login...")
+        self.login_thread = LoginThread()
+        self.login_thread.login_complete.connect(self.update_login_status)
+        self.login_thread.start()
+    
 
     def update_login_status(self, message):
         self.window.token_label.setText(message)
@@ -174,6 +191,7 @@ class AppController:
                 title="Spotify Booster",
                 message="Tokens refreshed successfully!",
                 app_name="Spotify Booster",
+                app_icon="icon.ico",
                 timeout=3
             )
 
@@ -182,6 +200,7 @@ class AppController:
             notification.notify(
                 title="Spotify Booster",
                 message=f"Error refreshing tokens: {str(e)}",
+                app_icon="icon.ico",
                 app_name="Spotify Booster"
             )
 
@@ -225,6 +244,7 @@ class AppController:
             notification.notify(
                 title="Spotify Booster",
                 message="Token auto-refreshed successfully!",
+                app_icon="icon.ico",
                 app_name="Spotify Booster"
             )
         except Exception as e:
@@ -232,7 +252,8 @@ class AppController:
             notification.notify(
                 title="Spotify Booster",
                 message=f"Error auto-refreshing tokens: {str(e)}",
-                app_name="Spotify Booster"
+                app_name="Spotify Booster",
+                app_icon="icon.ico",
             )
 
     def load_preferences(self):
@@ -255,7 +276,8 @@ class AppController:
             notification.notify(
                 title="Spotify Booster",
                 message=f"Added song: {song}",
-                app_name="Spotify Booster"
+                app_name="Spotify Booster",
+                app_icon="icon.ico",
             )
 
     def save_preferences(self):
@@ -270,15 +292,71 @@ class AppController:
             notification.notify(
                 title="Spotify Booster",
                 message="Preferences saved successfully!",
-                app_name="Spotify Booster"
+                app_name="Spotify Booster",
+                app_icon="icon.ico",
             )
         except Exception as e:
             print(f"Error saving preferences: {e}")
             notification.notify(
                 title="Spotify Booster",
                 message=f"Error saving preferences: {str(e)}",
-                app_name="Spotify Booster"
+                app_name="Spotify Booster",
+                app_icon="icon.ico",
             )
+
+    def start_training(self):
+        """Start the training process for the model."""
+        try:
+            QMessageBox.information(self.window, "Training", "Training has started!")
+            X_train, X_test, y_train, y_test, label_encoder = load_and_prepare_data()
+            self.model = train_and_evaluate_model(X_train, X_test, y_train, y_test)
+            self.label_encoder = label_encoder
+            QMessageBox.information(self.window, "Training", "Training completed!")
+        except Exception as e:
+            QMessageBox.critical(self.window, "Error", f"Error during training: {e}")
+
+    def create_model(self):
+        """Create and save the trained model."""
+        try:
+            if self.model and self.label_encoder:
+                save_model(self.model, self.label_encoder)
+                QMessageBox.information(self.window, "Model Saved", "The model has been saved successfully!")
+            else:
+                QMessageBox.warning(self.window, "Warning", "No trained model found. Train the model first.")
+        except Exception as e:
+            QMessageBox.critical(self.window, "Error", f"Error saving the model: {e}")
+
+    def start_prediction(self):
+        """Load the model and display playback prediction chart."""
+        try:
+            # Load model
+            self.model, self.label_encoder = joblib.load("machinelearning/saved_models/activity_model.pkl")
+            QMessageBox.information(self.window, "Prediction", "Model loaded successfully!")
+
+            # Generate predictions
+            now = pd.Timestamp.now()
+            future = pd.date_range(start=now, periods=24, freq='H')  # Next 24 hours
+            sample_data = pd.DataFrame({
+                "hour": future.hour,
+                "day_of_week": future.dayofweek,
+                "is_weekend": (future.dayofweek >= 5).astype(int)
+            })
+
+            predictions = self.model.predict(sample_data)
+            decoded_predictions = self.label_encoder.inverse_transform(predictions)
+
+            # Plot chart
+            ax = self.window.chart_canvas.figure.add_subplot(111)
+            ax.clear()
+            ax.plot(future, decoded_predictions, label="Predicted Status")
+            ax.set_title("Playback Predictions")
+            ax.set_xlabel("Time")
+            ax.set_ylabel("Status")
+            ax.legend()
+            self.window.chart_canvas.draw()
+        except Exception as e:
+            QMessageBox.critical(self.window, "Error", f"Error during prediction: {e}")
+
 
     
     def play_song(self):
@@ -300,7 +378,8 @@ class AppController:
             notification.notify(
                 title="Spotify Booster",
                 message=f"Error playing song: {str(e)}",
-                app_name="Spotify Booster"
+                app_name="Spotify Booster",
+                app_icon="icon.ico",
             )
 
     def pause_song(self):
@@ -349,6 +428,7 @@ class AppController:
                 title="Spotify Booster",
                 message="Playback schedule saved!",
                 app_name="Spotify Booster",
+                app_icon="icon.ico",
             )
         except Exception as e:
             print(f"Error saving schedule: {e}")
@@ -357,13 +437,19 @@ class AppController:
     def run_scheduler(self):
         """Continuously check if it's time to start or stop playback."""
         while True:
-            now = datetime.now()
-            if self.start_time and self.end_time:
-                if self.start_time <= now <= self.end_time:
-                    self.start_playback_if_not_running()
-                elif now > self.end_time:
-                    self.stop_playback()
-            time.sleep(10)  # Check every 10 seconds
+            try:
+                now = datetime.now()
+                if self.start_time and self.end_time:
+                    if self.start_time <= now <= self.end_time:
+                        if not self.is_playing:
+                            self.start_playback_if_not_running()
+                    elif now > self.end_time:
+                        self.stop_playback()
+                time.sleep(120)  # Check every 30 seconds to avoid spamming
+            except Exception as e:
+                print(f"Scheduler error: {e}")
+
+
 
     def start_playback_if_not_running(self):
         """Start playback if it's not already running."""
@@ -376,17 +462,23 @@ class AppController:
                 print("Access token invalid or expired. Login required.")
                 return
 
-            start_playback()  # Call the Spotify API
-            self.is_playing = True  # Set playback state
-            self.schedule_recheck()  # Schedule a recheck for later
+            try:
+                start_playback()  # Attempt to start playback
+                self.is_playing = True  # Set playback state
+                self.schedule_recheck()  # Schedule a recheck for later
 
-            notification.notify(
-                title="Spotify Booster",
-                message="Scheduled playback started!",
-                app_name="Spotify Booster",
-            )
+                notification.notify(
+                    title="Spotify Booster",
+                    message="Scheduled playback started!",
+                    app_name="Spotify Booster",
+                    app_icon="icon.ico",
+                )
+            except Exception as e:
+                print(f"Error starting playback: {e}")
         except Exception as e:
-            print(f"Error starting playback: {e}")
+            print(f"Error during playback handling: {e}")
+
+
 
     def schedule_recheck(self):
         """Schedule a recheck to validate playback after a certain period."""
@@ -407,13 +499,14 @@ class AppController:
     def stop_playback(self):
         """Stop playback if the schedule ends."""
         try:
-            pause_playback()
+            # pause_playback()  # Pause instead of stopping
             self.start_time = None
             self.end_time = None  # Clear the schedule after stopping playback
             notification.notify(
                 title="Spotify Booster",
                 message="Scheduled playback stopped!",
                 app_name="Spotify Booster",
+                app_icon="icon.ico",
             )
         except Exception as e:
             print(f"Error stopping playback: {e}")

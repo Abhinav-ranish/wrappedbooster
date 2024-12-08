@@ -1,5 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QTabWidget, QDateTimeEdit, QHBoxLayout, QListWidget, QLineEdit
 from PyQt5.QtCore import QDateTime, Qt
+from PyQt5.QtGui import QIcon
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -8,6 +11,7 @@ class MainWindow(QMainWindow):
         # Window properties
         self.setWindowTitle("Spotify Booster")
         self.setGeometry(100, 100, 600, 400)
+        self.setWindowIcon(QIcon("icon.png"))
 
         # Main layout with tabs
         self.tabs = QTabWidget()
@@ -90,6 +94,31 @@ class MainWindow(QMainWindow):
         self.scheduler_tab.setLayout(self.scheduler_layout)
         self.tabs.addTab(self.scheduler_tab, "Playback Scheduler")
 
+        # Tab 2: Machine Learning
+        self.ml_tab = QWidget()
+        self.ml_layout = QVBoxLayout()
+
+        self.start_training_button = QPushButton("Start Training")
+        self.ml_layout.addWidget(self.start_training_button)
+
+        self.create_model_button = QPushButton("Create Model")
+        self.ml_layout.addWidget(self.create_model_button)
+
+        self.ml_tab.setLayout(self.ml_layout)
+        self.tabs.addTab(self.ml_tab, "Machine Learning")
+
+        # Tab 3: Prediction
+        self.prediction_tab = QWidget()
+        self.prediction_layout = QVBoxLayout()
+
+        self.start_prediction_button = QPushButton("Start Prediction")
+        self.prediction_layout.addWidget(self.start_prediction_button)
+        # Chart area
+        self.chart_canvas = FigureCanvas(Figure(figsize=(5, 3)))
+        self.prediction_layout.addWidget(self.chart_canvas)
+
+        self.prediction_tab.setLayout(self.prediction_layout)
+        self.tabs.addTab(self.prediction_tab, "Prediction")
 
         # Set central widget
         self.setCentralWidget(self.tabs)

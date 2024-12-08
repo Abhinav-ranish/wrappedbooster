@@ -34,16 +34,28 @@ def start_playback(song_uri=None):
         raise Exception("Access token not found. Please log in.")
 
     headers = {"Authorization": f"Bearer {access_token}"}
-    url = "https://api.spotify.com/v1/me/player/play"
+    devices_url = "https://api.spotify.com/v1/me/player/devices"
+    playback_url = "https://api.spotify.com/v1/me/player/play"
 
+    # Fetch available devices
+    response = requests.get(devices_url, headers=headers)
+    response.raise_for_status()
+    devices = response.json().get("devices", [])
+    if not devices:
+        raise Exception("No active devices found. Open Spotify on a device.")
+
+    # Use the first active device or fallback
+    active_device = next((d for d in devices if d.get("is_active")), devices[0])
+
+    # Start playback
+    payload = {"device_id": active_device["id"]}
     if song_uri:
-        payload = {"uris": [song_uri]}
-    else:
-        payload = {}  # Resume playback
+        payload["uris"] = [song_uri]
 
-    response = requests.put(url, json=payload, headers=headers)
+    response = requests.put(playback_url, json=payload, headers=headers)
     response.raise_for_status()
     return response.json() if response.content else {}
+
 
 def pause_playback():
     """Pause playback on the user's Spotify account."""

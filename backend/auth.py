@@ -11,7 +11,7 @@ REDIRECT_URI = config["SPOTIFY_REDIRECT_URI"]
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 AUTH_URL = "https://accounts.spotify.com/authorize"
 
-def get_auth_url(scope="user-read-playback-state user-modify-playback-state"):
+def get_auth_url(scope="user-read-playback-state user-modify-playback-state user-read-currently-playing user-read-private"):
     query = urlencode({
         "client_id": CLIENT_ID,
         "response_type": "code",
@@ -19,6 +19,7 @@ def get_auth_url(scope="user-read-playback-state user-modify-playback-state"):
         "scope": scope
     })
     return f"{AUTH_URL}?{query}"
+
 
 def get_tokens(auth_code):
     payload = {

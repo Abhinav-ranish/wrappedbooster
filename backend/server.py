@@ -85,19 +85,19 @@ async def callback(code: str):
         return {"message": "Tokens updated and notification sent"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
+    
 @app.post("/refresh")
 def refresh_token_endpoint(request: Request):
-    if is_token_expired():
-        try:
-            tokens = refresh_token(REFRESH_TOKEN)
-            update_env(tokens)  # Saves tokens to .user
-            set_token_expiry(tokens['expires_in'])
-            return tokens
-        except Exception as e:
-            return RedirectResponse(url=f"/error?message={str(e)}")
-    return {"message": "Token is still valid"}
+    if not is_token_expired():
+        return {"message": "Token is still valid"} 
+    try:
+        tokens = refresh_token(REFRESH_TOKEN)
+        update_env(tokens)  # Saves tokens to .user
+        set_token_expiry(tokens['expires_in'])
+        return tokens
+    except Exception as e:
+        return RedirectResponse(url=f"/error?message={str(e)}")
+
 
 @app.get("/error")
 def error(request: Request):
