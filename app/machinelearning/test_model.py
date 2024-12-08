@@ -1,5 +1,5 @@
-import joblib
-import pandas as pd
+import joblib # type: ignore
+import pandas as pd # type: ignore
 
 # Path to the saved model
 MODEL_PATH = "saved_models/activity_model.pkl"

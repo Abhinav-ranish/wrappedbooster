@@ -1,7 +1,7 @@
 import asyncio
 from asyncio import Lock
-from fastapi import FastAPI, Request, HTTPException, WebSocket, WebSocketDisconnect
-from fastapi.responses import RedirectResponse
+from fastapi import FastAPI, Request, HTTPException, WebSocket, WebSocketDisconnect # type: ignore
+from fastapi.responses import RedirectResponse # type: ignore
 from auth import get_auth_url, get_tokens, refresh_token
 from dotenv import load_dotenv
 from datetime import datetime, timedelta

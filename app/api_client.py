@@ -1,4 +1,4 @@
-import requests
+import requests # type: ignore
 import os
 from dotenv import load_dotenv
 from pathlib import Path

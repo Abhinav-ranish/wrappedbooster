@@ -1,10 +1,10 @@
 import sqlite3
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-import lightgbm as lgb
-from sklearn.metrics import classification_report
-import joblib
+import pandas as pd # type: ignore
+from sklearn.model_selection import train_test_split # type: ignore
+from sklearn.preprocessing import LabelEncoder # type: ignore
+import lightgbm as lgb # type: ignore
+from sklearn.metrics import classification_report # type: ignore
+import joblib # type: ignore
 
 # Database and model paths
 DATABASE_PATH = "activity_log.db"

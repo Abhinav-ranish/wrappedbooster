@@ -1,5 +1,5 @@
 import time
-import requests
+import requests # type: ignore
 import sqlite3
 from threading import Thread
 from datetime import datetime

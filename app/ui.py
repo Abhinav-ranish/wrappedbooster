@@ -1,8 +1,8 @@
-from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QTabWidget, QDateTimeEdit, QHBoxLayout, QListWidget, QLineEdit
-from PyQt5.QtCore import QDateTime, Qt
-from PyQt5.QtGui import QIcon
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
+from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QTabWidget, QDateTimeEdit, QHBoxLayout, QListWidget, QLineEdit # type: ignore
+from PyQt5.QtCore import QDateTime, Qt # type: ignore
+from PyQt5.QtGui import QIcon # type: ignore
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas # type: ignore
+from matplotlib.figure import Figure # type: ignore
 
 class MainWindow(QMainWindow):
     def __init__(self):

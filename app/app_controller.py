@@ -1,22 +1,22 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMessageBox
-from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMessageBox # type: ignore
+from PyQt5.QtGui import QIcon # type: ignore
 from ui import MainWindow
-import pandas as pd
+import pandas as pd # type: ignore
 from api_client import get_login_url, refresh_tokens
 from machinelearning.model_training import train_and_evaluate_model, load_and_prepare_data, save_model
-from PyQt5.QtCore import QThread, pyqtSignal, QTimer
+from PyQt5.QtCore import QThread, pyqtSignal, QTimer # type: ignore
 from datetime import datetime, timedelta
 from api_client import start_playback, pause_playback, validate_access_token
 import webbrowser
-import websocket
+import websocket # type: ignore
 import time
 from threading import Thread
 from dotenv import load_dotenv
-import joblib
+import joblib # type: ignore
 from pathlib import Path
 import os
-from plyer import notification
+from plyer import notification # type: ignore
 import json
 
 # Load environment variables
