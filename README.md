@@ -17,7 +17,7 @@ Spotify Wrapped Booster is a tool designed to help users optimize their Spotify 
 
 ## Installation
 
-For a detailed step-by-step installation guide, see [Installation Guide](INSTALLATION.md).
+For a detailed step-by-step installation guide, see [Installation Guide](Installation.md).
 
 ---
 
