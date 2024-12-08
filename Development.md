@@ -11,20 +11,20 @@ The Spotify Wrapped Booster app is designed to optimize your Spotify Wrapped by 
 ### 1. Backend Server
 
 - **Purpose**: Manage Spotify authentication and provide APIs for user data and token refresh.
-- **Technology**: Python (FastAPI/Flask) or Node.js.
+- **Technology**: Python (FastAPI).
 - **Key Features**:
   - OAuth2 integration with Spotify.
   - API endpoints for:
     - Fetching user data.
     - Refreshing tokens.
-  - JSON or MongoDB storage for user tokens and settings.
+  - JSON storage for user tokens and settings.
 
 ### 2. Frontend/Desktop App
 
 - **Purpose**: User interface for preferences, status, and scheduling.
 - **Technology Options**:
-  - **Desktop**: Python (PyQt/Tkinter) or Java (JavaFX).
-  - **Web**: ReactJS or HTML/CSS + Flask/FastAPI for backend APIs.
+  - **Desktop**: Python (PyQt).
+  - **Web**: ReactJS or HTML/CSS + Flask/FastAPI for backend APIs.  Future?
 - **Key Features**:
   - Minimal GUI with settings and playback tracking.
   - System tray support for Windows (runs in background).
@@ -33,7 +33,7 @@ The Spotify Wrapped Booster app is designed to optimize your Spotify Wrapped by 
 ### 3. Background Scheduler
 
 - **Purpose**: Manage song playback and ensure background operation.
-- **Technology**: Python `schedule` library or `threading`.
+- **Technology**: Python `threading`.
 - **Key Features**:
   - Automates playback when user is inactive.
   - Integrates with machine learning model to predict user activity.
@@ -60,7 +60,7 @@ The Spotify Wrapped Booster app is designed to optimize your Spotify Wrapped by 
 
 ## **Development Phases**
 
-### **Phase 1: Backend Development**
+### **Phase 1: Backend Development** Dec 6
 - **Objective**: Set up a robust backend to handle Spotify authentication and token management.
 1. Set up Spotify authentication using OAuth2.
 2. Create APIs to:
@@ -70,7 +70,7 @@ The Spotify Wrapped Booster app is designed to optimize your Spotify Wrapped by 
 
 ---
 
-### **Phase 2: Frontend/Desktop App**
+### **Phase 2: Frontend/Desktop App** Dec 10
 
 #### **Phase 2a: Basic Functionality**
 - **Objective**: Establish basic GUI functionality and WebSocket integration.
@@ -92,7 +92,7 @@ The Spotify Wrapped Booster app is designed to optimize your Spotify Wrapped by 
 
 ---
 
-### **Phase 3: Playback Scheduler**
+### **Phase 3: Playback Scheduler** Dec 18
 - **Objective**: Implement a playback mechanism to meet Spotify Wrapped goals.
 1. Implement a background playback mechanism using threading or scheduling.
 2. Allow users to set schedules for automatic playback.
@@ -100,7 +100,7 @@ The Spotify Wrapped Booster app is designed to optimize your Spotify Wrapped by 
 
 ---
 
-### **Phase 4: Machine Learning Integration**
+### **Phase 4: Machine Learning Integration** Dec 25
 
 #### **Phase 4a: Data Collection**
 1. Collect user activity data (e.g., login/logout times, playback history).
@@ -116,7 +116,7 @@ The Spotify Wrapped Booster app is designed to optimize your Spotify Wrapped by 
 
 ---
 
-### **Phase 5: Testing and Deployment**
+### **Phase 5: Testing and Deployment** Jan 14
 
 1. **Testing**:
    - End-to-end workflow:
@@ -136,16 +136,16 @@ The Spotify Wrapped Booster app is designed to optimize your Spotify Wrapped by 
 ### Backend
 
 - Spotify API Library: `spotipy` (Python).
-- Web Framework: FastAPI or Flask.
+- Web Framework: FastAPI.
 
 ### Frontend/Desktop
 
-- GUI: PyQt/Tkinter (Python) or JavaFX (Java).
-- Web Option: ReactJS + REST API integration.
+- GUI: PyQt (Python).
+- Web Option: ReactJS + REST API integration. Future?
 
 ### Scheduler
 
-- Python `schedule` or `threading`.
+- Python `threading`.
 
 ### Machine Learning
 
@@ -153,7 +153,7 @@ The Spotify Wrapped Booster app is designed to optimize your Spotify Wrapped by 
 
 ### Database
 
-- JSON (`json` module in Python) or MongoDB (`pymongo`).
+- JSON (`json` module in Python).
 
 ---
 
