@@ -7,7 +7,7 @@ from api_client import get_login_url, refresh_tokens
 from machinelearning.model_training import train_and_evaluate_model, load_and_prepare_data, save_model
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer # type: ignore
 from datetime import datetime, timedelta
-from api_client import start_playback, pause_playback, validate_access_token
+from api_client import validate_access_token
 import webbrowser
 import websocket # type: ignore
 import time
@@ -41,7 +41,6 @@ class WebSocketClient(QThread):
                     title="Spotify Booster",
                     message="Access token updated successfully!",
                     app_name="Spotify Booster",
-                    app_icon="icon.ico",
                 )
 
         while True:
@@ -191,7 +190,6 @@ class AppController:
                 title="Spotify Booster",
                 message="Tokens refreshed successfully!",
                 app_name="Spotify Booster",
-                app_icon="icon.ico",
                 timeout=3
             )
 
@@ -200,7 +198,6 @@ class AppController:
             notification.notify(
                 title="Spotify Booster",
                 message=f"Error refreshing tokens: {str(e)}",
-                app_icon="icon.ico",
                 app_name="Spotify Booster"
             )
 
@@ -244,7 +241,6 @@ class AppController:
             notification.notify(
                 title="Spotify Booster",
                 message="Token auto-refreshed successfully!",
-                app_icon="icon.ico",
                 app_name="Spotify Booster"
             )
         except Exception as e:
@@ -253,7 +249,6 @@ class AppController:
                 title="Spotify Booster",
                 message=f"Error auto-refreshing tokens: {str(e)}",
                 app_name="Spotify Booster",
-                app_icon="icon.ico",
             )
 
     def load_preferences(self):
@@ -277,7 +272,6 @@ class AppController:
                 title="Spotify Booster",
                 message=f"Added song: {song}",
                 app_name="Spotify Booster",
-                app_icon="icon.ico",
             )
 
     def save_preferences(self):
@@ -293,7 +287,6 @@ class AppController:
                 title="Spotify Booster",
                 message="Preferences saved successfully!",
                 app_name="Spotify Booster",
-                app_icon="icon.ico",
             )
         except Exception as e:
             print(f"Error saving preferences: {e}")
@@ -301,7 +294,6 @@ class AppController:
                 title="Spotify Booster",
                 message=f"Error saving preferences: {str(e)}",
                 app_name="Spotify Booster",
-                app_icon="icon.ico",
             )
 
     def start_training(self):
@@ -365,7 +357,7 @@ class AppController:
             # Example URI for testing; replace with user-selected song if needed
             example_song_uri = "spotify:track:2plbrEY59IikOBgBGLjaoe"
             # https://open.spotify.com/track/2plbrEY59IikOBgBGLjaoe?si=73e7f6a50f7c43da spotify:track:2plbrEY59IikOBgBGLjaoe  spotify.com/track/ 2plbrEY59IikOBgBGLjaoe  ?si=73e7f6a50f7c43da
-            start_playback(example_song_uri)
+            #  start_playback(example_song_uri)
             self.window.token_label.setText("Playing song...")
             notification.notify(
                 title="Spotify Booster",
@@ -379,13 +371,12 @@ class AppController:
                 title="Spotify Booster",
                 message=f"Error playing song: {str(e)}",
                 app_name="Spotify Booster",
-                app_icon="icon.ico",
             )
 
     def pause_song(self):
         """Pause playback on Spotify."""
         try:
-            pause_playback()
+            #  pause_playback()
             self.window.token_label.setText("Playback paused.")
         except Exception as e:
             print(f"Error pausing playback: {str(e)}")
@@ -428,7 +419,6 @@ class AppController:
                 title="Spotify Booster",
                 message="Playback schedule saved!",
                 app_name="Spotify Booster",
-                app_icon="icon.ico",
             )
         except Exception as e:
             print(f"Error saving schedule: {e}")
@@ -471,7 +461,6 @@ class AppController:
                     title="Spotify Booster",
                     message="Scheduled playback started!",
                     app_name="Spotify Booster",
-                    app_icon="icon.ico",
                 )
             except Exception as e:
                 print(f"Error starting playback: {e}")
@@ -506,7 +495,6 @@ class AppController:
                 title="Spotify Booster",
                 message="Scheduled playback stopped!",
                 app_name="Spotify Booster",
-                app_icon="icon.ico",
             )
         except Exception as e:
             print(f"Error stopping playback: {e}")
