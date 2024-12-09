@@ -1,6 +1,6 @@
-# Spotify Wrapped Booster
+# Spotify Wrapped Bot
 
-Spotify Wrapped Booster is a tool designed to help users optimize their Spotify Wrapped playlist. The app ensures that the songs you want to feature are played continuously during inactive periods, helping you meet the necessary hours and song requirements.
+Spotify Wrapped Bot is a tool designed to help users optimize their Spotify Wrapped playlist. The app ensures that the songs you want to feature are played continuously during inactive periods, helping you meet the necessary hours and song requirements.
 
 ---
 
@@ -24,18 +24,23 @@ For a detailed step-by-step installation guide, see [Installation Guide](Install
 ## Screenshots
 
 ### Playback Status
+
 ![Playback Status Screenshot](assets/menu.png)
 
 ### Machine Learning
+
 ![Machine Learning Screenshot](assets/machinelearning.png)
 
 ### Prediction
+
 ![Prediction Screenshot](assets/predictions.png)
 
 ### List of Songs
+
 ![List of Songs](assets/songs.png)
 
-### Scheduler 
+### Scheduler
+
 ![Scheduler](assets/scheduler.png)
 
 ---
@@ -62,7 +67,7 @@ For a detailed step-by-step installation guide, see [Installation Guide](Install
 
 ### Machine Learning
 
-- Training script available in `ml/`.
+- Training script available in `app/machinelearning`.
 
 ---
 

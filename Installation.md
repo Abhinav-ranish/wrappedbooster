@@ -8,7 +8,6 @@ Follow these steps to set up and run the Spotify Wrapped Booster on your system.
 
 - Python 3.8 or higher.
 - A Spotify Developer Account to create API credentials.
-- (Optional) MongoDB for advanced data storage.
 
 ---
 
@@ -17,8 +16,8 @@ Follow these steps to set up and run the Spotify Wrapped Booster on your system.
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/abhinav-ranish/wrapped-booster.git
-cd spotify-wrapped-booster
+git clone https://github.com/abhinav-ranish/wrappedbot.git
+cd wrappedbot
 ```
 
 ### Step 2: Install Dependencies
@@ -82,6 +81,6 @@ Ensure your `config.json` is correct and the `Redirect URI` matches what is regi
 
 ## Need Help?
 
-For support, open an issue in the [GitHub repository](https://github.com/abhinav-ranish/wrapped-booster/issues).
+For support, open an issue in the [GitHub repository](https://github.com/abhinav-ranish/wrappedbot/issues).
 ```
 
